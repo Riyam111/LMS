@@ -2,34 +2,30 @@ import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
-    clerkUserId: {
+    _id: {
       type: String,
       required: true,
-      unique: true,
+     
     },
     name: {
       type: String,
-      required: [true, "Provide name"],
+      required: true
     },
     email: {
       type: String,
-      required: [true, "provide email"],
-      unique: true,
+      required: true
+     
     },
-    role: {
-      type: String,
-      enum: ["educator", "student"],
-      default: "student",
-    },
+    
     imageUrl: {
       type: String,
-      required: [true, "provide image url"],
+      required: true
     },
     enrolledCourses: [
       {
-        type: mongoose.Schema.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "Course",
-      },
+      }
     ],
   },
   {
@@ -37,6 +33,6 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-const UserModel = mongoose.model("User", userSchema);
+const User = mongoose.model("User", userSchema);
 
-export default UserModel;
+export default User;
