@@ -6,6 +6,8 @@ import { assets } from '../../assets/assets'
 import humanizeDuration from 'humanize-duration'
 import Footer from '../../components/student/Footer'
 import Youtube from "react-youtube";
+import axios from 'axios'
+import { toast } from 'react-toastify'
 
 const CourseDetails = () => {
   const {id}=useParams()
@@ -16,14 +18,53 @@ const CourseDetails = () => {
   const [openSections, setOpenSections] = useState({
     0: true,
   });
-  const {allCourses,currency,calculaterating,calculateNoOfLectures,calculateCourseDuration,calculateCourseChapterTime}=useContext(AppContext)
+  const {allCourses,currency,calculaterating,calculateNoOfLectures,calculateCourseDuration,calculateCourseChapterTime,backendUrl,userData,getToken}=useContext(AppContext)
   const fetchcoursedata=async()=>{
-    const findcourse=allCourses.find(course=>course._id===id)
-    setcourseData(findcourse)
+    try {
+      const {data}=await axios.get(backendUrl+'/api/course/'+id)
+    if(data.success){
+      setcourseData(data.courseData)
+    }
+    else{
+      toast.error(data.message)
+    }
+    } catch (error) {
+      toast.error(error.message)
+    }
+  }
+  const enrollCourse=async()=>{
+try {
+  if(!userData){
+    return toast.warn('Login to enroll')
+  }
+  if(isAlreadyEnrolled){
+    return toast.warn('User already enrolled')
+  }
+  const token=await getToken()
+  const {data}=await axios.post(backendUrl+'/api/user/purchase',{courseId:courseData._id},{
+    headers:{Authorization:`Bearer ${token}`}
+  })
+  if(data.success){
+    const {session_url}=data
+    window.location.replace(session_url)
+  }
+  else{
+    toast.error(data.message)
+  }
+
+
+} catch (error) {
+  toast.error(error.message)
+}
   }
   useEffect(()=>{
     fetchcoursedata()    
-  },[allCourses])
+  },[])
+  useEffect(()=>{
+   if(userData&& courseData)  {
+    setIsAlreadyEnrolled(userData.enrolledCourses.includes(courseData._id))
+   } 
+  },[userData,courseData])
    const toggleOpenSections = (index) => {
     setOpenSections((prev) => ({ ...prev, [index]: !prev[index] }));
   };
@@ -60,7 +101,7 @@ const CourseDetails = () => {
                       <p className='text-gray-500'>({courseData.courseRatings.length} {courseData.courseRatings>1?'ratings':'rating'})</p>
               <p className='text-blue-600'>{courseData.enrolledStudents.length} {courseData.enrolledStudents> 1 ?' Students': 'Student'}</p>
               </div>
-              <p>Course by <span className='text-blue-600 underline'>Geeks</span></p>
+              <p>Course by <span className='text-blue-600 underline'>{courseData.educator.name}</span></p>
              
               <div className="pt-8 text-gray-800">
                 <h2 className="text-xl font-semibold">Course structure</h2>
@@ -201,7 +242,7 @@ const CourseDetails = () => {
                 </div>
                  {!isAlreadyEnrolled && (
                   <button
-                    
+                    onClick={enrollCourse}
                     className="md:mt-6 mt-4 w-full py-3 text-white font-medium bg-blue-600 rounded"
                   >
                     {"Enroll Now"}
@@ -210,7 +251,7 @@ const CourseDetails = () => {
                 {isAlreadyEnrolled && (
                   <button
                    
-                    className="md:mt-6 mt-4 w-full py-3 text-white font-medium bg-purple-600 rounded cursor-pointer"
+                    className="md:mt-6 mt-4 w-full py-3 text-white font-medium bg-blue-600 rounded cursor-pointer"
                   >
                     {"Go to Course"}
                   </button>

@@ -12,7 +12,7 @@ const Loading = () => {
       }, 5000);
       return () => clearTimeout(timer);
     }
-  }, [navigate, path]);
+  }, []);
 
   return (
     <div className='fixed inset-0 bg-gray-200 bg-opacity-75 z-50 flex items-center justify-center pointer-events-auto'>

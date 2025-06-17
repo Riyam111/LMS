@@ -7,7 +7,17 @@ const Footer = () => {
    <footer className='bg-gray-800 md:px-36 text-left w-full mt-10'>
       <div className="flex flex-col md:flex-row items-start px-8 md:px-0 justify-center gap-10 md:gap-32 py-10 border-b border-white/30">
         <div className='flex flex-col md:items-start items-center w-full'>
-          <img src={assets.logo_dark} alt="logo_dark" />
+           <div  className="flex items-center gap-2 cursor-pointer">
+  <img 
+    src={assets.favicon} 
+    alt="logo" 
+    className="w-6 h-6 object-contain" 
+  />
+  <h1 className="text-base font-semibold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-sky-500 to-cyan-400">
+    Learnova
+  </h1>
+</div>
+
           <p className='mt-6 text-center md:text-left text-sm text-white/30'>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Officiis dolore similique assumenda suscipit ex, fugiat eius inventore totam enim dolorem dignissimos iure quibusdam at, sit placeat sapiente distinctio ab vero?</p>
         </div>
         <div className='flex flex-col md:items-start items-center w-full'>

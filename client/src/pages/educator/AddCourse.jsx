@@ -5,10 +5,14 @@ import "quill/dist/quill.core.css";
 import { assets } from "../../assets/assets";
 import { AppContext } from "../../context/AppContext";
 import Loading from "../../components/student/Loading";
+import { toast } from "react-toastify";
+
+import axios from "axios";
 
 
 
 const AddCourse = () => {
+  const {backendUrl,getToken}=useContext(AppContext)
   const quillRef = useRef(null);
   const editorRef = useRef(null);
 
@@ -109,24 +113,48 @@ const AddCourse = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!image) {
+    
+    try {
+      if (!image) {
       return toast.error("Please select a thumbnail image");
     }
     const courseDescription = quillRef.current.root.innerHTML;
     const courseData = {
       courseTitle,
       courseDescription,
-      coursePrice,
-      discount,
-      discountEndDate,
-      whatsInTheCourse,
+      coursePrice:Number(coursePrice),
+      discount:Number(discount),
       courseContent: chapters,
-    };
-    // console.log(courseData);
+      discountEndDate,
+  whatsInTheCourse,
+    }
+    const formData=new FormData()
+    formData.append('courseData',JSON.stringify(courseData))
+    formData.append('image',image)
+    const token=await getToken()
+    const {data}=await axios.post(backendUrl+'/api/educator/add-course',
+      formData,{headers:{Authorization:`Bearer ${token}`}})
+      if(data.success){
+        toast.success(data.message)
+setCourseTitle('')
+setCoursePrice(0)
+setDiscount(0)
+setImage(null)
+setChapters([])
+setDiscountEndDate('');
+setWhatsInTheCourse('');
 
-    // add course to database with image
+quillRef.current.root.innerHTML=""
+      }
+      else{
+        toast.error(data.message)
+      }
+    } catch (error) {
+      toast.error(error.message)
+    }
    
   }
+  
     
 
   useEffect(() => {
@@ -214,7 +242,7 @@ const AddCourse = () => {
               min={0}
               max={100}
               className="outline-none md:py-2.5 py-2 w-28 px-3 rounded border border-gray-500"
-              required
+              
             />
           </div>
           <div className="flex flex-col gap-1">
@@ -224,7 +252,7 @@ const AddCourse = () => {
               onChange={(e) => setDiscountEndDate(e.target.value)}
               value={discountEndDate}
               className="outline-none md:py-2.5 py-2 w-36 px-3 rounded border border-gray-500"
-              required
+              
             />
           </div>
           {/* adding chapter and lecture */}

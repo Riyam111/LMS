@@ -4,14 +4,28 @@ import { AppContext } from "../../context/AppContext";
 
 import { Link } from "react-router-dom";
 import Loading from "../../components/student/Loading";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const MyCourses = () => {
-  const { currency, enrolledCourses,  isEducator } =
+  const { currency,   isEducator,backendUrl,getToken } =
     useContext(AppContext);
   const [courses, setCourses] = useState(null);
 
   const fetchEducatorCourses = async () => {
-     setCourses(enrolledCourses);
+    try {
+      const token=await getToken()
+      const {data}=await axios.get(backendUrl+'/api/educator/courses',
+        {
+          headers:{
+            Authorization:`Bearer ${token}`
+          }
+        }
+      )
+      data.success && setCourses(data.courses)
+    } catch (error) {
+      toast.error(error.message)
+    }
    
   };
 

@@ -3,15 +3,30 @@ import { dummyStudentEnrolled } from "../../assets/assets";
 
 import { AppContext } from "../../context/AppContext";
 import Loading from "../../components/student/Loading";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 
 const StudentsEnrolled = () => {
+  const {backendUrl,getToken,isEducator}=useContext(AppContext)
   const [enrolledStudents, setEnrolledStudents] = useState();
 
-  const {  isEducator } = useContext(AppContext);
+  
 
   const fetchEnrolledStudents = async () => {
-     setEnrolledStudents(dummyStudentEnrolled);
+   try {
+    const token=await getToken()
+    const {data}=await axios.get(backendUrl+'/api/educator/enrolled-student',
+      {headers:{Authorization:`Bearer ${token}`}})
+      if(data.success){
+        setEnrolledStudents(data.enrolledStudents.reverse())
+      }
+      else{
+        toast.error(data.message)
+      }
+   } catch (error) {
+     toast.error(error.message)
+   }
     
   };
 
@@ -55,7 +70,8 @@ const StudentsEnrolled = () => {
                   </td>
                   <td className="px-4 py-3 truncate">{item.courseTitle}</td>
                   <td className="px-4 py-3 hidden sm:table-cell">
-                    {new Date(item.purchasedAt).toLocaleDateString()}
+                     {console.log(item.purchaseDate)}
+                    {new Date(item.purchaseDate).toLocaleDateString()}
                   </td>
                 </tr>
               ))}

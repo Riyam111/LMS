@@ -2,14 +2,32 @@ import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../context/AppContext";
 import { assets, dummyDashboardData } from "../../assets/assets";
 import Loading from "../../components/student/Loading";
+import axios from "axios";
 
 
 const Dashboard = () => {
-  const { currency,   isEducator } = useContext(AppContext);
+  const { currency,   isEducator,backendUrl,getToken } = useContext(AppContext);
   const [dashboardData, setDashboardData] = useState(null);
 
   const fetchDashboardData = async () => {
-     setDashboardData(dummyDashboardData);}
+    try {
+      const token=await getToken()
+      const {data}=await axios.get(backendUrl+`/api/educator/dashboard`,
+        {headers:{Authorization:`Bearer ${token}`}}
+      )
+      if(data.success){
+        setDashboardData(data.dashboardData)
+      }
+      else{
+        toast.error(data.message)
+      }
+    } catch (error) {
+      toast.error(error.message)
+    }
+  
+  
+  
+  }
     useEffect(() => {
     isEducator && fetchDashboardData();
   }, [isEducator]); 
@@ -40,7 +58,7 @@ const Dashboard = () => {
     <img src={assets.earning_icon} alt="patients_icon" />
     <div>
       <p className="text-2xl font-medium text-gray-600">
-        {currency} {dashboardData.totalEarning}
+        {currency} {dashboardData.totalEarnings}
       </p>
       <p className="text-base text-gray-500">Total Earnings</p>
     </div>

@@ -42,7 +42,9 @@ import profile_img from './profile_img.png'
 import profile_img2 from './profile_img2.png'
 import profile_img3 from './profile_img3.png'
 import lesson_icon from './lesson_icon.svg'
-
+import learnova from './learnova.svg'
+import Learnova_1 from './Learnova_3.png'
+import favicon from './favicon.svg'
 
 export const assets = {
     logo,
@@ -67,6 +69,7 @@ export const assets = {
     cross_icon,
     upload_area,
     logo_dark,
+    learnova,
     down_arrow_icon,
     time_left_clock_icon,
     time_clock_icon,
@@ -88,7 +91,9 @@ export const assets = {
     profile_img3,
     play_icon,
     blue_tick_icon,
-    lesson_icon
+    lesson_icon,
+    Learnova_1,
+    favicon,
 }
 
 export const dummyEducatorData = {
