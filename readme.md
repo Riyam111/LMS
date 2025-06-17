@@ -1,6 +1,12 @@
 # Learnova - Learning Management System(LMS)
 
 A full-stack LMS (Learning Management System) web application built with the MERN stack. It allows users to browse, purchase, and access online courses. Admins can manage courses, chapters, and video lectures.
+# Learnova - Learning Management System (LMS)
+
+A full-stack LMS (Learning Management System) web application built with the MERN stack. It allows users to browse, purchase, and access online courses. Admins can manage courses, chapters, and video lectures.
+
+🌐 **Live Demo**: [Click here to view](https://lms-frontend-hazel-seven.vercel.app/)
+
 
 ## 🚀 Tech Stack
 
