@@ -68,8 +68,10 @@ try {
    const toggleOpenSections = (index) => {
     setOpenSections((prev) => ({ ...prev, [index]: !prev[index] }));
   };
-  
-
+ 
+const goToCourse = () => {
+  navigate(`/player/${id}`);
+};
   return (
     <div >
     { courseData?(
@@ -250,7 +252,7 @@ try {
                 )}
                 {isAlreadyEnrolled && (
                   <button
-                   
+                   onClick={goToCourse}
                     className="md:mt-6 mt-4 w-full py-3 text-white font-medium bg-blue-600 rounded cursor-pointer"
                   >
                     {"Go to Course"}

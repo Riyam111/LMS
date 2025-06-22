@@ -110,6 +110,15 @@ const Player = () => {
       toast.error(error.message);
     }
   };
+// total lectures in the course
+const totalLectures = courseData?.courseContent?.reduce(
+  (acc, chapter) => acc + chapter.chapterContent.length,
+  0
+);
+
+// check if course is completed
+const isCourseCompleted =
+  progressData?.lectureCompleted?.length === totalLectures;
 
   useEffect(()=>{
     if(enrolledCourses.length>0){
@@ -121,7 +130,36 @@ const Player = () => {
   useEffect(()=>{
     getCourseProgress()
   },[])
-  
+  //handel certificate function
+  const downloadCertificate = async () => {
+  try {
+    const token = await getToken(); // Clerk or auth method
+    const response = await fetch(`${backendUrl}/api/user/get-certificate`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ courseId }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      return toast.error(errorData.message || "Failed to download certificate");
+    }
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${courseData.courseTitle}_Certificate.pdf`;
+    a.click();
+    a.remove();
+  } catch (error) {
+    toast.error(error.message);
+  }
+};
+
 
   return courseData? (
    <>
@@ -215,14 +253,19 @@ const Player = () => {
 
             />
           </div>
+          {isCourseCompleted && (
+  <div className="mt-6">
+    <button
+     onClick={downloadCertificate}
+      className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700"
+    >
+      🎓 Download Certificate
+    </button>
+  </div>
+)}
+
           
-          <button
-            type="button"
-            
-            className="bg-black text-white w-max py-2.5 px-8 rounded my-4"
-          >
-            Submit
-          </button>
+         
         </div>
         {/* right column */}
         <div className="md:mt-10">

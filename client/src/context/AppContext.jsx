@@ -13,6 +13,7 @@ export const AppContextProvider = ( props) => {
   const currency=import.meta.env.VITE_CURRENCY
   const navigate=useNavigate();
 const {getToken}=useAuth()
+
 const {user}=useUser()
 
   const [allCourses,setAllCourses]=useState([]);
@@ -40,6 +41,7 @@ const {user}=useUser()
     }
     try {
       const token =await getToken();
+      console.log(token)
       const {data}= await axios.get(backendUrl+'/api/user/data',{headers:{Authorization:`Bearer ${token}`}})
      if(data.success){
       setUserData(data.user)

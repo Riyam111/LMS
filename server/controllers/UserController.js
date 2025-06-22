@@ -3,6 +3,7 @@ import { courseProgress } from "../models/CourseProgress.js";
 import Purchases from "../models/Purchase.js"
 import User from "../models/User.js"
 import Stripe from "stripe";
+import generateCertificatePDF from "../utils/GenerateCertificate.js";
 export const getUserData=async(req,res)=>{
     try {
      
@@ -147,3 +148,48 @@ export const addUserRating=async(req,res)=>{
       return res.json({success:false,message:error.message})  
     }
 }
+//adding genrate certificate function 
+export const generateCertificate = async (req, res) => {
+  try {
+    const userId = req.auth.userId;
+    const { courseId } = req.body;
+
+    const user = await User.findById(userId);
+    const course = await Course.findById(courseId);
+    const progress = await courseProgress.findOne({ userId, courseId });
+
+    if (!user || !course) {
+      return res.status(404).json({ success: false, message: 'User or Course not found' });
+    }
+
+    if (!user.enrolledCourses.includes(courseId)) {
+      return res.status(403).json({ success: false, message: 'You are not enrolled in this course' });
+    }
+
+    const totalLectures = course.courseContent.reduce(
+      (acc, chapter) => acc + chapter.chapterContent.length,
+      0
+    );
+
+    if (!progress || progress.lectureCompleted.length < totalLectures) {
+      return res.status(400).json({ success: false, message: 'Course not completed yet' });
+    }
+
+    const pdfBuffer = await generateCertificatePDF({
+      studentName: user.name,
+      courseTitle: course.courseTitle,
+      date: new Date().toLocaleDateString(),
+    });
+
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="${course.courseTitle}_Certificate.pdf"`,
+    });
+
+    res.send(pdfBuffer);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
